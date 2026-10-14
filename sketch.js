@@ -246,11 +246,18 @@ function figureWidth(pose) {
 
 // ★★★★★★ 第 1 步 开始 / STEP 1 START：drawLimb（把整个函数换成 Qwen 写的版本 / replace the whole function with Qwen's version）★★★★★★
 function drawLimb(a, b, w) {
-  // 临时版本：一条细细的白线 / placeholder: a thin white line
+  // 画一段肢体：一条很粗、两头圆圆的朱红色线，就像剪下来的彩纸
+  // 两端有一个点看不清楚就不画
   if (!isVisible(a) || !isVisible(b)) return;
-  stroke(255);
-  strokeWeight(2);
+  // 朱红色的粗线，线头是圆的
+  stroke(RED);
+  strokeWeight(w);
+  strokeCap(ROUND);
   line(a.x, a.y, b.x, b.y);
+  // 末端再盖一个圆圆的关节
+  noStroke();
+  fill(RED);
+  circle(b.x, b.y, w * 1.1);
 }
 // ★★★★★★ 第 1 步 结束 / STEP 1 END ★★★★★★
 
