@@ -304,13 +304,31 @@ function drawFigure(pose, w) {
 
 // ★★★★★★ 第 3 步 开始 / STEP 3 START：gouacheShader（把整个函数换成 Qwen 写的版本 / replace the whole function with Qwen's version）★★★★★★
 function gouacheShader() {
-  // 临时版本：什么都不改变的着色器 / placeholder: a shader that changes nothing
+  // 返回一段 GLSL 片元着色器，让画面看起来像纸上的水粉画：
+  // 边缘轻轻抖动（像手剪的纸）、有纸张颗粒、四个角暗一点
   return `precision mediump float;
 varying vec2 vTexCoord;
 uniform sampler2D tex0;
 uniform float uTime;
+
+// 伪随机数：给纸张颗粒用
+float rand(vec2 p) {
+  return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 void main() {
-  gl_FragColor = texture2D(tex0, vTexCoord);
+  vec2 uv = vTexCoord;
+  // 边缘像手剪的纸一样，随时间轻轻抖动
+  uv.x += sin(uv.y * 40.0 + uTime * 0.5) * 0.002;
+  uv.y += cos(uv.x * 40.0 + uTime * 0.5) * 0.002;
+  vec4 col = texture2D(tex0, uv);
+  // 纸张的颗粒：细小随机噪点，有亮有暗
+  float grain = rand(floor(vTexCoord * 400.0)) * 0.08 - 0.04;
+  col.rgb += grain;
+  // 四个角暗一点（ vignette 暗角 ）
+  float d = distance(vTexCoord, vec2(0.5));
+  col.rgb *= 1.0 - d * 0.5;
+  gl_FragColor = vec4(col.rgb, 1.0);
 }`;
 }
 // ★★★★★★ 第 3 步 结束 / STEP 3 END ★★★★★★
