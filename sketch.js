@@ -263,11 +263,42 @@ function drawLimb(a, b, w) {
 
 // ★★★★★★ 第 2 步 开始 / STEP 2 START：drawFigure（把整个函数换成 Qwen 写的版本 / replace the whole function with Qwen's version）★★★★★★
 function drawFigure(pose, w) {
-  // 临时版本：只画手臂 / placeholder: only the arms
+  // 画一个完整的舞者：躯干、头、脖子、手臂和腿，全部是朱红色
+  // 常用的身体点：左右肩膀、左右胯部、鼻子
+  let ls = pose[11];
+  let rs = pose[12];
+  let lh = pose[23];
+  let rh = pose[24];
+  let nose = pose[0];
+
+  noStroke();
+  fill(RED);
+
+  // 躯干：四个点都看得见才画四边形
+  if (isVisible(ls) && isVisible(rs) && isVisible(lh) && isVisible(rh)) {
+    quad(ls.x, ls.y, rs.x, rs.y, rh.x, rh.y, lh.x, lh.y);
+  }
+
+  // 头：鼻子看得见就画圆圆的头
+  if (isVisible(nose)) {
+    circle(nose.x, nose.y, w * 1.8);
+    // 脖子：两个肩膀都看得见，就从肩膀中点连到鼻子
+    if (isVisible(ls) && isVisible(rs)) {
+      drawLimb({ x: (ls.x + rs.x) / 2, y: (ls.y + rs.y) / 2, visibility: 1 }, nose, w * 0.8);
+    }
+  }
+
+  // 手臂：上臂粗一点，前臂细一点
   drawLimb(pose[11], pose[13], w);
-  drawLimb(pose[13], pose[15], w);
+  drawLimb(pose[13], pose[15], w * 0.8);
   drawLimb(pose[12], pose[14], w);
-  drawLimb(pose[14], pose[16], w);
+  drawLimb(pose[14], pose[16], w * 0.8);
+
+  // 腿：大腿粗一点，小腿细一点
+  drawLimb(pose[23], pose[25], w * 1.2);
+  drawLimb(pose[25], pose[27], w);
+  drawLimb(pose[24], pose[26], w * 1.2);
+  drawLimb(pose[26], pose[28], w);
 }
 // ★★★★★★ 第 2 步 结束 / STEP 2 END ★★★★★★
 
