@@ -335,7 +335,23 @@ void main() {
 
 // ★★★★★★ 第 4 步 开始 / STEP 4 START：drawEchoes（把整个函数换成 Qwen 写的版本 / replace the whole function with Qwen's version）★★★★★★
 function drawEchoes(history) {
-  // 临时版本：还没有回声舞者 / placeholder: no echo dancers yet
+  // 画 4 个“回声舞者”：晚一点点模仿你的动作，围成一圈，单数的舞者左右相反
+  const offsets = [-0.36, -0.18, 0.18, 0.36]; // 4 个舞者相对画面中心的横向位置
+  for (let k = 1; k <= 4; k++) {
+    // 越晚的舞者用越早的姿态：每个晚 8 帧；历史还不够就跳过
+    let i = history.length - 1 - k * 8;
+    if (i < 0) continue;
+    let pose = history[i];
+    push();
+    // 挪到这个舞者的位置
+    translate(width / 2 + offsets[k - 1] * width, 0);
+    // 单数的舞者左右镜像
+    if (k % 2 === 1) scale(-1, 1);
+    // 以画面中心为基准来画
+    translate(-width / 2, 0);
+    drawFigure(pose, figureWidth(pose) * 0.8);
+    pop();
+  }
 }
 // ★★★★★★ 第 4 步 结束 / STEP 4 END ★★★★★★
 
